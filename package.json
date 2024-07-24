@@ -1,0 +1,27 @@
+{
+  "name": "activity-view",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start:client": "vite serve src/client",
+    "start:server": "node --import tsx src/server/server.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "20.14.9",
+    "tsx": "4.16.0",
+    "typescript": "5.5.2",
+    "vite": "5.3.2"
+  },
+  "dependencies": {
+    "@fastify/cors": "9.0.1",
+    "@gmod/bbi": "4.0.5",
+    "d3": "7.9.0",
+    "fastify": "4.28.1",
+    "lit": "3.1.4"
+  }
+}
