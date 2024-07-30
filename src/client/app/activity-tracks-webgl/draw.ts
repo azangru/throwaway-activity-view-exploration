@@ -38,8 +38,6 @@ const draw = ({
     values
   });
 
-
-
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
   gl.clearColor(0, 0, 0, 0);
@@ -50,26 +48,22 @@ const draw = ({
   gl.useProgram(program);
   gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
 
-  gl.enableVertexAttribArray(positionAttributeLocation);
-  gl.enableVertexAttribArray(intensityAttributeLocation);
+  setPositionAttribute({
+    gl,
+    buffer: positionBuffer,
+    vertexLocation: positionAttributeLocation
+  });
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-  const size = 2;          // 2 components per iteration
-  const type = gl.FLOAT;   // the data is 32bit floats
-  const normalize = false; // don't normalize the data
-  const stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
-  const offset = 0;        // start at the beginning of the buffer
-  gl.vertexAttribPointer(positionAttributeLocation, size, type, normalize, stride, offset);
-
-
-  gl.bindBuffer(gl.ARRAY_BUFFER, intensityBuffer);
-  gl.vertexAttribPointer(intensityAttributeLocation, 1, type, normalize, stride, offset);
-
+  setIntensityAttribute({
+    gl,
+    buffer: intensityBuffer,
+    intensityLocation: intensityAttributeLocation
+  });
 
   const primitiveType = gl.TRIANGLES;
   const count = vertices.length/2;
 
-  gl.drawArrays(primitiveType, offset, count);
+  gl.drawArrays(primitiveType, 0, count);
 };
 
 
@@ -103,6 +97,60 @@ const createProgram = (gl: WebGL2RenderingContext, vertexShader: WebGLShader, fr
   }
 };
 
+const setPositionAttribute = ({
+  gl,
+  buffer,
+  vertexLocation
+}: {
+  gl: WebGL2RenderingContext;
+  buffer: WebGLBuffer;
+  vertexLocation: number;
+}) => {
+  const size = 2;          // 2 components per iteration
+  const type = gl.FLOAT;   // the data is 32bit floats
+  const normalize = false; // don't normalize the data
+  const stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
+  const offset = 0;        // start at the beginning of the buffer
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+  gl.vertexAttribPointer(
+    vertexLocation,
+    size,
+    type,
+    normalize,
+    stride,
+    offset
+  );
+  gl.enableVertexAttribArray(vertexLocation);
+};
+
+const setIntensityAttribute = ({
+  gl,
+  buffer,
+  intensityLocation
+}: {
+  gl: WebGL2RenderingContext;
+  buffer: WebGLBuffer;
+  intensityLocation: number;
+}) => {
+  const size = 1;          // 1 component per iteration
+  const type = gl.FLOAT;   // the data is 32bit floats
+  const normalize = false; // don't normalize the data
+  const stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
+  const offset = 0;        // start at the beginning of the buffer
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+  gl.vertexAttribPointer(
+    intensityLocation,
+    size,
+    type,
+    normalize,
+    stride,
+    offset
+  );
+  gl.enableVertexAttribArray(intensityLocation);
+};
+
 const initPositionBuffer = ({gl, values}: {
   gl: WebGL2RenderingContext;
   values: number[];
@@ -132,30 +180,43 @@ const transformDataToRectangleVertices = ({ canvasWidth, data }: { canvasWidth: 
   const allVertices = [];
   const values = [];
 
-  let currentRectX = 0;
 
   // const totalItemCount = data.reduce((acc, item) => acc + item.count, 0);
-  console.log(Math.max(...data.map(item => item.value)));
+  // console.log(Math.max(...data.map(item => item.value)));
 
-  for (const item of data) {
-    const rectWidthFractionOfData = item.count / item.totalCount;
-    const rectWidthFractionOfCanvas = rectWidthFractionOfData * canvasWidth;
-    const rectWidth = rectWidthFractionOfCanvas;
+  const rowsCount = 50;
+  
+  for (let i = 0; i < rowsCount; i++) {
+    const rectangleHeight = 10;
+    const spaceBetweenRows = 30;
+    const y1 = i * spaceBetweenRows;
+    const y2 = y1 + rectangleHeight;
+    
+    let currentRectX = 0;
 
-    // const rectWidth = Math.max(1, Math.round((item.count / item.totalCount) * canvasWidth));
-    let x = currentRectX;
-    currentRectX += rectWidth; // for the next rectangle
+    for (const item of data) {
+      const rectWidthFractionOfData = item.count / item.totalCount;
+      const rectWidthFractionOfCanvas = rectWidthFractionOfData * canvasWidth;
+      const rectWidth = rectWidthFractionOfCanvas;
+  
+      // const rectWidth = Math.max(1, Math.round((item.count / item.totalCount) * canvasWidth));
+      let x = currentRectX;
+      currentRectX += rectWidth; // for the next rectangle
+  
+      const vertices = getRectangleVertices({
+        x1: x,
+        x2: x + rectWidth,
+        y1,
+        y2
+      });
+ 
+      allVertices.push(...vertices);
+      values.push(...Array(6).fill(item.value)); // there are 6 vertices per rectangle
+    }
 
-    const vertices = getRectangleVertices({
-      x1: x,
-      x2: x + rectWidth,
-      y1: 0,
-      y2: 15
-    });
-
-    allVertices.push(...vertices);
-    values.push(...Array(6).fill(item.value)); // there are 6 vertices per rectangle
   }
+
+
 
   return {
     vertices: allVertices,

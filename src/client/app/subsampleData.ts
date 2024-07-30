@@ -15,8 +15,18 @@ export const subsampleData = (sourceData: number[], sampleCount: number) => {
   const sampledData: number[] = [];
   
   for (let i = 0; i < sampleCount; i++) {
-    const samplingIndex = samplingStep * i;
-    sampledData.push(sourceData[samplingIndex]);
+    const indexIntoOriginalData = i * samplingStep;
+    const originalValues = sourceData.slice(indexIntoOriginalData, samplingStep);
+    
+    // get the average
+    let newValue = 0;
+
+    for (let j = 0; j < originalValues.length; j++) {
+      newValue += originalValues[j];
+    }
+    newValue / originalValues.length;
+
+    sampledData.push(newValue);
   }
 
   return sampledData;

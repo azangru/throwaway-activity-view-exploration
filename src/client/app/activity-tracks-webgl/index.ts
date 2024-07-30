@@ -2,7 +2,7 @@ import { LitElement, css, html, type PropertyValues } from 'lit';
 import { state } from 'lit/decorators.js';
 
 import draw from './draw';
-import { compressData, approximateData } from '../subsampleData';
+import { subsampleData, compressData, approximateData } from '../subsampleData';
 
 class ActivityTracks extends LitElement {
   canvas!: HTMLCanvasElement;
@@ -39,10 +39,11 @@ class ActivityTracks extends LitElement {
 
   willUpdate(changedProperties: PropertyValues<this>) {
     // only need to check changed properties for an expensive computation.
-    if (changedProperties.has('data')) {
+    if (changedProperties.has('data') && this.data.length) {
       const data = this.data;
 
       const approximatedData = approximateData(this.data);
+      const sampledData = subsampleData(approximatedData, 2200);
       const rowData = compressData(approximatedData);
 
       data.length && this.draw(rowData);
@@ -66,6 +67,7 @@ class ActivityTracks extends LitElement {
     const canvas = this.shadowRoot.querySelector('canvas');
 
     const canvasBoundingRect = canvas.getBoundingClientRect();
+    console.log('canvasBoundingRect', canvasBoundingRect);
     const canvasWdith = canvasBoundingRect.width * devicePixelRatio;
     const canvasHeight = canvasBoundingRect.height * devicePixelRatio;
     canvas.width = canvasWdith;
@@ -73,8 +75,6 @@ class ActivityTracks extends LitElement {
 
     this.canvas = canvas;
 
-
-    console.log('about to draw');
     draw({ canvas: this.canvas, data });
   }
 
