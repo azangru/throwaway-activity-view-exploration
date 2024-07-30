@@ -22,7 +22,9 @@ export const getBigwigData = async () => {
 
   // console.log('header', header);
 
-  const data = await file.getFeatures('25', 3551249, 3651249);
+  // const data = await file.getFeatures('25', 3551249, 3651249);
+
+  const data = await file.getFeatures('26', 19007637, 19107637);
 
   return data.map(item => item.score);
 };
