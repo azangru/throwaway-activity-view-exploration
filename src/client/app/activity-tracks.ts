@@ -5,7 +5,7 @@
 import { LitElement, css, html, svg } from 'lit';
 import { state } from 'lit/decorators.js';
 
-import { compressData, approximateData } from './subsampleData';
+import { subsampleData, compressData, approximateData } from './subsampleData';
 
 class ActivityTracks extends LitElement {
   @state()
@@ -54,7 +54,10 @@ class ActivityTracks extends LitElement {
     const paddingAdjustment = 22; // 10px padding on both sides + 1px border on either side
 
     const approximatedData = approximateData(this.data);
-    const rowsData = compressData(approximatedData);
+    const sampledData = subsampleData(approximatedData, width);
+    console.log('sampledData', sampledData);
+    // const rowsData = compressData(approximatedData);
+    const rowsData = compressData(sampledData);
 
     performance.mark('rows-started');
 
@@ -109,6 +112,7 @@ class ActivityTracks extends LitElement {
   }
 
   getRectFill(value: number) {
+    value = Math.min(Math.round(Math.log(value) * 12), 100);
     const color = `color-mix(in lch, grey ${value}%, white)`;
 
     return color;

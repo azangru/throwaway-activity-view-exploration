@@ -44,7 +44,8 @@ class ActivityTracks extends LitElement {
 
       const approximatedData = approximateData(this.data);
       const sampledData = subsampleData(approximatedData, 2200);
-      const rowData = compressData(approximatedData);
+      // const rowData = compressData(approximatedData);
+      const rowData = compressData(sampledData);
 
       data.length && this.draw(rowData);
     }
@@ -67,7 +68,6 @@ class ActivityTracks extends LitElement {
     const canvas = this.shadowRoot.querySelector('canvas');
 
     const canvasBoundingRect = canvas.getBoundingClientRect();
-    console.log('canvasBoundingRect', canvasBoundingRect);
     const canvasWdith = canvasBoundingRect.width * devicePixelRatio;
     const canvasHeight = canvasBoundingRect.height * devicePixelRatio;
     canvas.width = canvasWdith;
