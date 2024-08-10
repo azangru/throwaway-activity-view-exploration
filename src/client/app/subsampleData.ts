@@ -24,8 +24,7 @@ export const subsampleData = (sourceData: number[], sampleCount: number) => {
     for (let j = 0; j < originalValues.length; j++) {
       newValue += originalValues[j];
     }
-    newValue / originalValues.length;
-
+    newValue = Math.round(newValue / originalValues.length);
     sampledData.push(newValue);
   }
 

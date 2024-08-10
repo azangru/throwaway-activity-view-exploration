@@ -5,11 +5,11 @@
 import { LitElement, css, html, svg } from 'lit';
 import { state } from 'lit/decorators.js';
 
-import { subsampleData, compressData, approximateData } from './subsampleData';
+import { subsampleData, compressData, approximateData } from '../subsampleData';
 
 class ActivityTracks extends LitElement {
   @state()
-  data: number[] = [];
+  data: {values: number[]}[] = [];
 
   static styles = css`
     :host {
@@ -40,10 +40,16 @@ class ActivityTracks extends LitElement {
 
   fetchData = async () => {
     const url = 'http://localhost:3000/';
-    const response = await fetch(url);  
-    const data: {data: number[]} = await response.json();
-    this.data = data.data;
-  };
+    const response = await fetch(url);
+    const data: {values: number[]}[] = await response.json();
+    this.data = data;
+  }
+
+  prepareDataForRendering(data: typeof this.data, width: number) {
+    return data
+      .map(({ values }) => subsampleData(values, width))
+      .map((values) => compressData(values));
+  }
 
   render() {
     if (!this.data.length) {
@@ -53,16 +59,12 @@ class ActivityTracks extends LitElement {
     const { width } = this.getBoundingClientRect();
     const paddingAdjustment = 22; // 10px padding on both sides + 1px border on either side
 
-    const approximatedData = approximateData(this.data);
-    const sampledData = subsampleData(approximatedData, width - paddingAdjustment);
-    // console.log('sampledData', sampledData);
-    // const rowsData = compressData(approximatedData);
-    const rowsData = compressData(sampledData);
+    const rowsData = this.prepareDataForRendering(this.data, width - paddingAdjustment);
 
     performance.mark('rows-started');
 
-    const rowSvgs = [...Array(50)].map(() => this.renderRow({
-      data: rowsData,
+    const rowSvgs = rowsData.map((rowData) => this.renderRow({
+      data: rowData,
       width: width - paddingAdjustment
     }));
 
@@ -112,8 +114,8 @@ class ActivityTracks extends LitElement {
   }
 
   getRectFill(value: number) {
-    value = Math.min(Math.round(Math.log(value) * 12), 100);
-    const color = `color-mix(in lch, grey ${value}%, white)`;
+    value = value * 10;
+    const color = `color-mix(in lch, black ${value}%, white)`;
 
     return color;
   }
