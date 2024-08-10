@@ -12,7 +12,7 @@ const draw = ({
   data
 }: {
   canvas: HTMLCanvasElement;
-  data: DataItem[];
+  data: DataItem[][];
 }) => {
   let { vertices, values } = transformDataToRectangleVertices({
     canvasWidth: canvas.width,
@@ -174,7 +174,7 @@ const initIntensityBuffer = ({gl, values}: {
 };
 
 
-const transformDataToRectangleVertices = ({ canvasWidth, data }: { canvasWidth: number, data: DataItem[] }) => {
+const transformDataToRectangleVertices = ({ canvasWidth, data }: { canvasWidth: number, data: DataItem[][] }) => {
   const allVertices = [];
   const values = [];
 
@@ -182,7 +182,7 @@ const transformDataToRectangleVertices = ({ canvasWidth, data }: { canvasWidth: 
   // const totalItemCount = data.reduce((acc, item) => acc + item.count, 0);
   // console.log(Math.max(...data.map(item => item.value)));
 
-  const rowsCount = 50;
+  const rowsCount = data.length;
   
   for (let i = 0; i < rowsCount; i++) {
     const rectangleHeight = 10;
@@ -192,7 +192,7 @@ const transformDataToRectangleVertices = ({ canvasWidth, data }: { canvasWidth: 
     
     let currentRectX = 0;
 
-    for (const item of data) {
+    for (const item of data[i]) {
       const rectWidthFractionOfData = item.count / item.totalCount;
       const rectWidthFractionOfCanvas = rectWidthFractionOfData * canvasWidth;
       const rectWidth = rectWidthFractionOfCanvas;
