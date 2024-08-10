@@ -9,12 +9,12 @@ const drawOnCanvas2d = ({
   data
 }: {
   canvas: HTMLCanvasElement;
-  data: DataItem[];
+  data: DataItem[][];
 }) => {
   const canvasContext = canvas.getContext('2d');
   const canvasWidth = canvas.width;
 
-  const rowsCount = 50;
+  const rowsCount = data.length;
 
   for (let i = 0; i < rowsCount; i++) {
     const rectangleHeight = 10;
@@ -23,7 +23,7 @@ const drawOnCanvas2d = ({
     
     let currentRectX = 0;
 
-    for (const item of data) {
+    for (const item of data[i]) {
       const rectWidthFractionOfData = item.count / item.totalCount;
       const rectWidthFractionOfCanvas = rectWidthFractionOfData * canvasWidth;
       const rectWidth = rectWidthFractionOfCanvas;
@@ -33,7 +33,7 @@ const drawOnCanvas2d = ({
 
       const colorChannelValue = item.value === 0
         ? 255
-        : Math.max(255 - Math.log(item.value) * 20, 0);
+        : 255 - item.value * 25.5;
       const colorString = `rgb(${colorChannelValue}, ${colorChannelValue}, ${colorChannelValue})`;
 
       canvasContext.fillStyle = colorString;

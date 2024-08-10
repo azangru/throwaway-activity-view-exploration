@@ -8,7 +8,7 @@ class ActivityTracks extends LitElement {
   canvas!: HTMLCanvasElement;
 
   @state()
-  data: number[] = [];
+  data: {values: number[]}[] = [];
 
   static styles = css`
     :host {
@@ -40,23 +40,21 @@ class ActivityTracks extends LitElement {
   willUpdate(changedProperties: PropertyValues<this>) {
     // only need to check changed properties for an expensive computation.
     if (changedProperties.has('data') && this.data.length) {
-      const data = this.data;
+      const { width } = this.getBoundingClientRect();
+      const paddingAdjustment = 22; // 10px padding on both sides + 1px border on either side
+  
+      const rowsData = this.prepareDataForRendering(this.data, width - paddingAdjustment);
 
-      const approximatedData = approximateData(this.data);
-      const sampledData = subsampleData(approximatedData, 2200);
-      // const rowData = compressData(approximatedData);
-      const rowData = compressData(sampledData);
-
-      data.length && this.drawCanvas(rowData);
+      this.drawCanvas(rowsData);
     }
   }
 
   fetchData = async () => {
     const url = 'http://localhost:3000/';
-    const response = await fetch(url);  
-    const data: {data: number[]} = await response.json();
-    this.data = data.data;
-  };
+    const response = await fetch(url);
+    const data: {values: number[]}[] = await response.json();
+    this.data = data;
+  }
 
   render() {
     return html`
@@ -64,7 +62,13 @@ class ActivityTracks extends LitElement {
     `;
   }
 
-  drawCanvas(data: { value: number; count: number; totalCount: number }[]) {
+  prepareDataForRendering(data: typeof this.data, width: number) {
+    return data
+      .map(({ values }) => subsampleData(values, width))
+      .map((values) => compressData(values));
+  }
+
+  drawCanvas(data: { value: number; count: number; totalCount: number }[][]) {
     const canvas = this.shadowRoot.querySelector('canvas');
 
     const canvasBoundingRect = canvas.getBoundingClientRect();
