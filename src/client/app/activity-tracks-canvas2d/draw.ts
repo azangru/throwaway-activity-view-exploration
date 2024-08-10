@@ -18,7 +18,7 @@ const drawOnCanvas2d = ({
 
   for (let i = 0; i < rowsCount; i++) {
     const rectangleHeight = 10;
-    const spaceBetweenRows = 30;
+    const spaceBetweenRows = 20;
     const y = i * spaceBetweenRows;
     
     let currentRectX = 0;

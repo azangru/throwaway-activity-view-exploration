@@ -10,7 +10,7 @@ in float v_intensity;
 out vec4 outColor;
  
 void main() {
-  float color = clamp(1.0 - log(v_intensity) / 10.0, 0.3, 1.0);
+  float color = clamp(1.0 - log(v_intensity) / 12.0, 0.3, 1.0);
 
   outColor = vec4(color, color, color, 1.0);
 

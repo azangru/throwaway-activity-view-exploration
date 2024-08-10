@@ -54,8 +54,8 @@ class ActivityTracks extends LitElement {
     const paddingAdjustment = 22; // 10px padding on both sides + 1px border on either side
 
     const approximatedData = approximateData(this.data);
-    const sampledData = subsampleData(approximatedData, width);
-    console.log('sampledData', sampledData);
+    const sampledData = subsampleData(approximatedData, width - paddingAdjustment);
+    // console.log('sampledData', sampledData);
     // const rowsData = compressData(approximatedData);
     const rowsData = compressData(sampledData);
 

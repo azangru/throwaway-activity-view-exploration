@@ -65,7 +65,6 @@ class ActivityTracks extends LitElement {
   }
 
   drawCanvas(data: { value: number; count: number; totalCount: number }[]) {
-    console.log('hi?');
     const canvas = this.shadowRoot.querySelector('canvas');
 
     const canvasBoundingRect = canvas.getBoundingClientRect();

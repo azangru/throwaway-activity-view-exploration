@@ -77,7 +77,6 @@ const createShader = (gl: WebGL2RenderingContext, type: GLenum, source: string):
   if (success) {
     return shader;
   } else {
-    console.log(gl.getShaderInfoLog(shader));
     gl.deleteShader(shader);
   }
 };
@@ -92,7 +91,6 @@ const createProgram = (gl: WebGL2RenderingContext, vertexShader: WebGLShader, fr
   if (success) {
     return program;
   } else {
-    console.log(gl.getProgramInfoLog(program));
     gl.deleteProgram(program);
   }
 };
@@ -188,8 +186,8 @@ const transformDataToRectangleVertices = ({ canvasWidth, data }: { canvasWidth: 
   
   for (let i = 0; i < rowsCount; i++) {
     const rectangleHeight = 10;
-    const spaceBetweenRows = 30;
-    const y1 = i * spaceBetweenRows;
+    const spaceBetweenRows = 20;
+    const y1 = i * spaceBetweenRows + 100;
     const y2 = y1 + rectangleHeight;
     
     let currentRectX = 0;
