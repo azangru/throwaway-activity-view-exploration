@@ -1,14 +1,17 @@
 import { LitElement, css, html, type PropertyValues } from 'lit';
-import { state } from 'lit/decorators.js';
+import { property } from 'lit/decorators.js';
 
-import draw from './draw';
-import { subsampleData, compressData, approximateData } from '../subsampleData';
+import draw, { ROW_HEIGHT } from './draw';
 
 class ActivityTracks extends LitElement {
   canvas!: HTMLCanvasElement;
 
-  @state()
-  data: {values: number[]}[] = [];
+  @property({ type: Array })
+  data: {
+    value: number;
+    count: number;
+    totalCount: number;
+  }[][] = [];
 
   static styles = css`
     :host {
@@ -29,31 +32,11 @@ class ActivityTracks extends LitElement {
     }
   `;
 
-  connectedCallback() {
-    super.connectedCallback();
-  }
-
-  firstUpdated() {
-    this.fetchData();
-  }
-
-  willUpdate(changedProperties: PropertyValues<this>) {
+  updated(changedProperties: PropertyValues<this>) {
     // only need to check changed properties for an expensive computation.
     if (changedProperties.has('data') && this.data.length) {
-      const { width } = this.getBoundingClientRect();
-      const paddingAdjustment = 22; // 10px padding on both sides + 1px border on either side
-  
-      const rowsData = this.prepareDataForRendering(this.data, width - paddingAdjustment);
-
-      this.draw(rowsData);
+      this.draw(this.data);
     }
-  }
-
-  fetchData = async () => {
-    const url = 'http://localhost:3000/';
-    const response = await fetch(url);
-    const data: {values: number[]}[] = await response.json();
-    this.data = data;
   }
 
   render() {
@@ -62,18 +45,12 @@ class ActivityTracks extends LitElement {
     `;
   }
 
-  prepareDataForRendering(data: typeof this.data, width: number) {
-    return data
-      .map(({ values }) => subsampleData(values, width))
-      .map((values) => compressData(values));
-  }
-
   draw(data: { value: number; count: number; totalCount: number }[][]) {
     const canvas = this.shadowRoot.querySelector('canvas');
 
     const canvasBoundingRect = canvas.getBoundingClientRect();
     const canvasWdith = canvasBoundingRect.width * devicePixelRatio;
-    const canvasHeight = canvasBoundingRect.height * devicePixelRatio;
+    const canvasHeight = ROW_HEIGHT * data.length;
     canvas.width = canvasWdith;
     canvas.height = canvasHeight;
 
@@ -84,4 +61,4 @@ class ActivityTracks extends LitElement {
 
 }
 
-customElements.define('activity-tracks', ActivityTracks);
+customElements.define('activity-tracks-webgl', ActivityTracks);

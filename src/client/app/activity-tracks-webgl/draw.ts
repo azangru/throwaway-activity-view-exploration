@@ -7,6 +7,9 @@ type DataItem = {
   totalCount: number;
 };
 
+export const RECTANGLE_HEIGHT = 5 * devicePixelRatio;
+export const ROW_HEIGHT = 10 * devicePixelRatio;
+
 const draw = ({
   canvas,
   data
@@ -185,8 +188,8 @@ const transformDataToRectangleVertices = ({ canvasWidth, data }: { canvasWidth: 
   const rowsCount = data.length;
   
   for (let i = 0; i < rowsCount; i++) {
-    const rectangleHeight = 10;
-    const spaceBetweenRows = 20;
+    const rectangleHeight = RECTANGLE_HEIGHT;
+    const spaceBetweenRows = ROW_HEIGHT;
     const y1 = i * spaceBetweenRows + 100;
     const y2 = y1 + rectangleHeight;
     

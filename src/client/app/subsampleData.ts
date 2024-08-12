@@ -10,7 +10,17 @@
  * Using the stupidest sampling strategy possible — just pick out numbers after a step
  */
 export const subsampleData = (sourceData: number[], sampleCount: number) => {
-  const samplingStep = Math.floor(sourceData.length / sampleCount);
+  if (sourceData.length === sampleCount) {
+    return sourceData;
+  } else if (sourceData.length < sampleCount) {
+    const sampledData = [...sourceData];
+    const remainder = Array(sampleCount - sourceData.length).fill(0);
+    sampledData.push(...remainder);
+    return sampledData;
+  }
+
+
+  const samplingStep = Math.ceil(sourceData.length / sampleCount);
 
   const sampledData: number[] = [];
   
@@ -24,7 +34,7 @@ export const subsampleData = (sourceData: number[], sampleCount: number) => {
     for (let j = 0; j < originalValues.length; j++) {
       newValue += originalValues[j];
     }
-    newValue = Math.round(newValue / originalValues.length);
+    newValue = originalValues.length ? Math.round(newValue / originalValues.length) : newValue;
     sampledData.push(newValue);
   }
 

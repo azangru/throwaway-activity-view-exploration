@@ -4,6 +4,9 @@ type DataItem = {
   totalCount: number;
 };
 
+export const RECTANGLE_HEIGHT = 5 * devicePixelRatio;
+export const ROW_HEIGHT = 10 * devicePixelRatio;
+
 const drawOnCanvas2d = ({
   canvas,
   data
@@ -17,8 +20,8 @@ const drawOnCanvas2d = ({
   const rowsCount = data.length;
 
   for (let i = 0; i < rowsCount; i++) {
-    const rectangleHeight = 10;
-    const spaceBetweenRows = 20;
+    const rectangleHeight = RECTANGLE_HEIGHT;
+    const spaceBetweenRows = ROW_HEIGHT;
     const y = i * spaceBetweenRows;
     
     let currentRectX = 0;

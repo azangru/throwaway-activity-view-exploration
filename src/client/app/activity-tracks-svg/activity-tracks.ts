@@ -3,13 +3,15 @@
  */
 
 import { LitElement, css, html, svg } from 'lit';
-import { state } from 'lit/decorators.js';
-
-import { subsampleData, compressData, approximateData } from '../subsampleData';
+import { property } from 'lit/decorators.js';
 
 class ActivityTracks extends LitElement {
-  @state()
-  data: {values: number[]}[] = [];
+  @property({ type: Array })
+  data: {
+    value: number;
+    count: number;
+    totalCount: number;
+  }[][] = [];
 
   static styles = css`
     :host {
@@ -33,23 +35,6 @@ class ActivityTracks extends LitElement {
     }
   `;
 
-  connectedCallback() {
-    super.connectedCallback();
-    this.fetchData();
-  }
-
-  fetchData = async () => {
-    const url = 'http://localhost:3000/';
-    const response = await fetch(url);
-    const data: {values: number[]}[] = await response.json();
-    this.data = data;
-  }
-
-  prepareDataForRendering(data: typeof this.data, width: number) {
-    return data
-      .map(({ values }) => subsampleData(values, width))
-      .map((values) => compressData(values));
-  }
 
   render() {
     if (!this.data.length) {
@@ -59,7 +44,7 @@ class ActivityTracks extends LitElement {
     const { width } = this.getBoundingClientRect();
     const paddingAdjustment = 22; // 10px padding on both sides + 1px border on either side
 
-    const rowsData = this.prepareDataForRendering(this.data, width - paddingAdjustment);
+    const rowsData = this.data;
 
     performance.mark('rows-started');
 
@@ -122,4 +107,4 @@ class ActivityTracks extends LitElement {
 
 }
 
-customElements.define('activity-tracks', ActivityTracks);
+customElements.define('activity-tracks-svg', ActivityTracks);
